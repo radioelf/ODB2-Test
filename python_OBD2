@@ -1,0 +1,40 @@
+'''
+Connectar USB Blotuff y activar el puerto serie /dev/rfcomm0
+Respuesta (OBDII SOLO conectado pin16->+12V y pint5->GND):
+[obd.elm327] Failed to query protocol 0100: unable to connect
+[obd.elm327] Adapter connected, but the ignition is off
+[obd.obd] Cannot load commands: No connection to car
+Tensión de la Batería: 12.3 volt V
+
+1. [obd.elm327] Failed to query protocol 0100: unable to connect
+    El dispositivo ELM327 no pudo establecer una conexión 
+    con el vehículo para leer el protocolo 0100, que generalmente se 
+    utiliza para obtener información de diagnóstico genérica.
+   
+2. [obd.elm327] Adapter connected, but the ignition is off
+    El ELM327 se conectó correctamente al vehículo, pero el sistema OBD-II del vehículo no está activo porque el encendido (ignición) está apagado.
+
+3. [obd.obd] Cannot load commands: No connection to car
+    La biblioteca OBD no pudo cargar los comandos porque no hay una conexión establecida con el vehículo.
+
+4. Tensión de la Batería: 12.3 volt V
+    Se logró leer la tensión de la batería, que es de 12.3 voltios.
+'''
+import obd
+
+# Conecta al dispositivo OBD-II
+connection = obd.OBD()  # auto-connects to USB or RF port
+
+# Selecciona el comando para la tensión de la batería
+cmd = obd.commands.ELM_VOLTAGE  # o utiliza otro comando relacionado con la batería si este no funciona
+
+# Envía el comando y parsea la respuesta
+response = connection.query(cmd)
+
+# Verifica si la respuesta es válida
+if response.is_null():
+    print("No se pudo leer la tensión de la batería")
+else:
+    # Imprime el valor de la tensión de la batería
+    print("Tensión de la Batería:", response.value, "V")
+    
